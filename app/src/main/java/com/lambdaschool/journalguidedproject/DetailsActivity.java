@@ -93,7 +93,7 @@ public class DetailsActivity extends AppCompatActivity {
         dayImageView = findViewById(R.id.journal_entry_image);
         final Uri imageUri = entry.getImage();
         if(imageUri != null) {
-            dayImageView.setImageURI(imageUri);
+//            dayImageView.setImageURI(imageUri);
         }
 
         findViewById(R.id.add_image_button).setOnClickListener(new View.OnClickListener() {
