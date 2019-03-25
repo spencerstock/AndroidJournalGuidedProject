@@ -23,8 +23,6 @@ public class JournalListActivity extends AppCompatActivity {
     public static final int EDIT_ENTRY_REQUEST = 1;
     Context context;
 
-    static int nextId = 0;
-
     ArrayList<JournalEntry> entryList;
     LinearLayout listLayout;
 
@@ -32,18 +30,19 @@ public class JournalListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        context = this;
+
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
-        JournalEntry testEntry = new JournalEntry(987);
+        JournalEntry testEntry = new JournalEntry(JournalEntry.INVALID_ID);
         testEntry.setEntryText("This is a test of our csv functionality. I think this will work well, if we coded it properly.");
         String csv = testEntry.toCsvString();
-        JournalEntry csvParsedEntry = new JournalEntry(csv);
+        JournalSharedPrefsRepository repo = new JournalSharedPrefsRepository(context);
+        repo.createEntry(testEntry);
 
         setContentView(R.layout.activity_journal_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        context = this;
 
         listLayout = findViewById(R.id.list_view);
 
@@ -102,7 +101,7 @@ public class JournalListActivity extends AppCompatActivity {
     }
 
     private JournalEntry createJournalEntry() {
-        JournalEntry entry = new JournalEntry(nextId++);
+        JournalEntry entry = new JournalEntry(JournalEntry.INVALID_ID);
 
         /*DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date       date       = new Date();

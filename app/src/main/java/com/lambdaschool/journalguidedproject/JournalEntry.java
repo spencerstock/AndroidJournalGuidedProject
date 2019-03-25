@@ -31,17 +31,30 @@ public class JournalEntry implements Serializable {
     }
 
     public JournalEntry(String csvString) {
-//        String.format("%d,%s,%d,%s,%s", id, date, dayRating, entryText, image);
         String[] values = csvString.split(",");
+        // check to see if we have the right string
         if(values.length == 5) {
-            this.id = Integer.parseInt(values[0]);
+            // handle missing numbers or strings in the number position
+            try {
+                this.id = Integer.parseInt(values[0]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
             this.date = values[1];
-            this.dayRating = Integer.parseInt(values[2]);
+            try {
+                this.dayRating = Integer.parseInt(values[2]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            // allows us to replace commas in the entry text with a unique character and
+            // preserve entry structure
             this.entryText = values[3].replace("~@", ",");
+            // placeholder for image will maintain csv's structure even with no provided image
             this.image = values[4].equals("unused") ? "": values[4];
         }
     }
 
+    // converting our object into a csv string that we can handle in a constructor
     String toCsvString() {
         return String.format("%d,%s,%d,%s,%s",
                              id,
@@ -96,5 +109,9 @@ public class JournalEntry implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
