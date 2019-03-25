@@ -34,6 +34,11 @@ public class JournalListActivity extends AppCompatActivity {
 
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
+        JournalEntry testEntry = new JournalEntry(987);
+        testEntry.setEntryText("This is a test of our csv functionality. I think this will work well, if we coded it properly.");
+        String csv = testEntry.toCsvString();
+        JournalEntry csvParsedEntry = new JournalEntry(csv);
+
         setContentView(R.layout.activity_journal_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,10 +104,10 @@ public class JournalListActivity extends AppCompatActivity {
     private JournalEntry createJournalEntry() {
         JournalEntry entry = new JournalEntry(nextId++);
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        /*DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date       date       = new Date();
 
-        entry.setDate(dateFormat.format(date));
+        entry.setDate(dateFormat.format(date));*/
 
         return entry;
     }

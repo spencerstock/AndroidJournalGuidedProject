@@ -3,6 +3,9 @@ package com.lambdaschool.journalguidedproject;
 import android.net.Uri;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class JournalEntry implements Serializable {
     public static final String TAG = "JournalEntry";
@@ -21,9 +24,38 @@ public class JournalEntry implements Serializable {
 
     public JournalEntry(int id) {
         this.id = id;
-        this.date = "";
         this.entryText = "";
         this.image = "";
+
+        initializeDate();
+    }
+
+    public JournalEntry(String csvString) {
+//        String.format("%d,%s,%d,%s,%s", id, date, dayRating, entryText, image);
+        String[] values = csvString.split(",");
+        if(values.length == 5) {
+            this.id = Integer.parseInt(values[0]);
+            this.date = values[1];
+            this.dayRating = Integer.parseInt(values[2]);
+            this.entryText = values[3].replace("~@", ",");
+            this.image = values[4].equals("unused") ? "": values[4];
+        }
+    }
+
+    String toCsvString() {
+        return String.format("%d,%s,%d,%s,%s",
+                             id,
+                             date,
+                             dayRating,
+                             entryText.replace(",", "~@"),
+                             image == "" ? "unused": image);
+    }
+
+    private void initializeDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date       date       = new Date();
+
+        this.setDate(dateFormat.format(date));
     }
 
     public String getDate() {
