@@ -3,6 +3,9 @@ package com.lambdaschool.journalguidedproject;
 import android.net.Uri;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class JournalEntry implements Serializable {
     public static final String TAG = "JournalEntry";
@@ -21,9 +24,51 @@ public class JournalEntry implements Serializable {
 
     public JournalEntry(int id) {
         this.id = id;
-        this.date = "";
         this.entryText = "";
         this.image = "";
+
+        initializeDate();
+    }
+
+    public JournalEntry(String csvString) {
+        String[] values = csvString.split(",");
+        // check to see if we have the right string
+        if(values.length == 5) {
+            // handle missing numbers or strings in the number position
+            try {
+                this.id = Integer.parseInt(values[0]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            this.date = values[1];
+            try {
+                this.dayRating = Integer.parseInt(values[2]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+            // allows us to replace commas in the entry text with a unique character and
+            // preserve entry structure
+            this.entryText = values[3].replace("~@", ",");
+            // placeholder for image will maintain csv's structure even with no provided image
+            this.image = values[4].equals("unused") ? "": values[4];
+        }
+    }
+
+    // converting our object into a csv string that we can handle in a constructor
+    String toCsvString() {
+        return String.format("%d,%s,%d,%s,%s",
+                             id,
+                             date,
+                             dayRating,
+                             entryText.replace(",", "~@"),
+                             image == "" ? "unused": image);
+    }
+
+    private void initializeDate() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date       date       = new Date();
+
+        this.setDate(dateFormat.format(date));
     }
 
     public String getDate() {
@@ -64,5 +109,9 @@ public class JournalEntry implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

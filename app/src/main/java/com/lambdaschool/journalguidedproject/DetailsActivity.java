@@ -16,10 +16,6 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class DetailsActivity extends AppCompatActivity {
 
     private static final int IMAGE_REQUEST_CODE = 50;
@@ -36,7 +32,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
 
 //        createJournalEntry();
         Intent intent = getIntent();
@@ -93,7 +89,7 @@ public class DetailsActivity extends AppCompatActivity {
         dayImageView = findViewById(R.id.journal_entry_image);
         final Uri imageUri = entry.getImage();
         if(imageUri != null) {
-            dayImageView.setImageURI(imageUri);
+//            dayImageView.setImageURI(imageUri);
         }
 
         findViewById(R.id.add_image_button).setOnClickListener(new View.OnClickListener() {
