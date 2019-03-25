@@ -32,12 +32,8 @@ public class JournalSharedPrefsRepository {
             editor.putInt(NEXT_ID_KEY, ++nextId);
 
             // add id to list of ids
-            String    idList = prefs.getString(ID_LIST_KEY, "");
-            String[] oldList = idList.split(",");
-            ArrayList<String> ids    = new ArrayList<>(oldList.length);
-            if(!idList.equals("")) {
-                ids.addAll(Arrays.asList(oldList));
-            }
+            // read list of entry ids
+            ArrayList<String> ids = getListOfIds();
 
             ids.add(Integer.toString(entry.getId()));
             // store updated id list
@@ -46,7 +42,7 @@ public class JournalSharedPrefsRepository {
                 newIdList.append(id).append(",");
             }
 
-            editor.putString(ID_LIST_KEY, ids.toString());
+            editor.putString(ID_LIST_KEY, newIdList.toString());
 
             // store new entry
             editor.putString(ENTRY_ITEM_KEY_PREFIX + entry.getId(), entry.toCsvString());
@@ -58,9 +54,39 @@ public class JournalSharedPrefsRepository {
         // save entry
     }
 
+    private ArrayList<String> getListOfIds() {
+        String    idList = prefs.getString(ID_LIST_KEY, "");
+        String[] oldList = idList.split(",");
+        ArrayList<String> ids    = new ArrayList<>(oldList.length);
+        if(!idList.equals("")) {
+            ids.addAll(Arrays.asList(oldList));
+        }
+        return ids;
+    }
+
     // read an existing entry
+    public JournalEntry readEntry(int id) {
+        String entryCsv = prefs.getString(ENTRY_ITEM_KEY_PREFIX + id, "invalid");
+        if(!entryCsv.equals("invalid")) {
+            JournalEntry entry = new JournalEntry(entryCsv);
+            return entry;
+        } else {
+            return null;
+        }
+    }
 
     // read all entries
+    public ArrayList<JournalEntry> readAllEntries() {
+        // read list of entry ids
+        final ArrayList<String> listOfIds = getListOfIds();
+
+        // step through that list and read each entry
+        ArrayList<JournalEntry> entryList = new ArrayList<>();
+        for(String id: listOfIds) {
+            entryList.add(readEntry(Integer.parseInt(id)));
+        }
+        return entryList;
+    }
 
     // edit an existing entry
 

@@ -39,6 +39,8 @@ public class JournalListActivity extends AppCompatActivity {
         String csv = testEntry.toCsvString();
         JournalSharedPrefsRepository repo = new JournalSharedPrefsRepository(context);
         repo.createEntry(testEntry);
+        JournalEntry readEntry = repo.readEntry(testEntry.getId());
+        final ArrayList<JournalEntry> journalEntries = repo.readAllEntries();
 
         setContentView(R.layout.activity_journal_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
