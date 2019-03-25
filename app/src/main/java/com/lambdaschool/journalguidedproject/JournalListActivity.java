@@ -25,22 +25,24 @@ public class JournalListActivity extends AppCompatActivity {
 
     ArrayList<JournalEntry> entryList;
     LinearLayout listLayout;
+    JournalSharedPrefsRepository repo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = this;
+        repo = new JournalSharedPrefsRepository(context);
 
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
-        JournalEntry testEntry = new JournalEntry(JournalEntry.INVALID_ID);
+        /*JournalEntry testEntry = new JournalEntry(JournalEntry.INVALID_ID);
         testEntry.setEntryText("This is a test of our csv functionality. I think this will work well, if we coded it properly.");
         String csv = testEntry.toCsvString();
         JournalSharedPrefsRepository repo = new JournalSharedPrefsRepository(context);
         repo.createEntry(testEntry);
         JournalEntry readEntry = repo.readEntry(testEntry.getId());
-        final ArrayList<JournalEntry> journalEntries = repo.readAllEntries();
+        final ArrayList<JournalEntry> journalEntries = repo.readAllEntries();*/
 
         setContentView(R.layout.activity_journal_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,8 +63,8 @@ public class JournalListActivity extends AppCompatActivity {
             }
         });
 
-        entryList = new ArrayList<>();
-        addTestEntries();
+        entryList = repo.readAllEntries();
+//        addTestEntries();
     }
 
     @Override
@@ -143,11 +145,13 @@ public class JournalListActivity extends AppCompatActivity {
                 if (data != null) {
                     JournalEntry entry = (JournalEntry) data.getSerializableExtra(JournalEntry.TAG);
                     entryList.add(entry);
+                    repo.createEntry(entry);
                 }
             } else if (requestCode == EDIT_ENTRY_REQUEST) {
                 if (data != null) {
                     JournalEntry entry = (JournalEntry) data.getSerializableExtra(JournalEntry.TAG);
                     entryList.set(entry.getId(), entry);
+                    repo.updateEntry(entry);
                 }
             }
         }

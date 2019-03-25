@@ -10,9 +10,9 @@ import java.util.Arrays;
 public class JournalSharedPrefsRepository {
     private static final String JOURNAL_PREFERENCES = "JournalPreferences";
 
-    private static final String ID_LIST_KEY = "id_list";
+    private static final String ID_LIST_KEY           = "id_list";
     private static final String ENTRY_ITEM_KEY_PREFIX = "entry_";
-    private static final String NEXT_ID_KEY = "next_id";
+    private static final String NEXT_ID_KEY           = "next_id";
 
     private SharedPreferences prefs;
 
@@ -22,7 +22,10 @@ public class JournalSharedPrefsRepository {
 
     // create a new entry
     public void createEntry(JournalEntry entry) {
-        if(entry.getId() == JournalEntry.INVALID_ID) {
+        // read list of entry ids
+        ArrayList<String> ids = getListOfIds();
+
+        if (entry.getId() == JournalEntry.INVALID_ID && !ids.contains(Integer.toString(entry.getId()))) {
             // new entry
             SharedPreferences.Editor editor = prefs.edit();
 
@@ -32,13 +35,11 @@ public class JournalSharedPrefsRepository {
             editor.putInt(NEXT_ID_KEY, ++nextId);
 
             // add id to list of ids
-            // read list of entry ids
-            ArrayList<String> ids = getListOfIds();
 
             ids.add(Integer.toString(entry.getId()));
             // store updated id list
             StringBuilder newIdList = new StringBuilder();
-            for(String id: ids) {
+            for (String id : ids) {
                 newIdList.append(id).append(",");
             }
 
@@ -48,17 +49,17 @@ public class JournalSharedPrefsRepository {
             editor.putString(ENTRY_ITEM_KEY_PREFIX + entry.getId(), entry.toCsvString());
             editor.apply();
         } else {
-            // existing entry that needs to be edited
-    }
+            updateEntry(entry);
+        }
 
         // save entry
     }
 
     private ArrayList<String> getListOfIds() {
-        String    idList = prefs.getString(ID_LIST_KEY, "");
-        String[] oldList = idList.split(",");
-        ArrayList<String> ids    = new ArrayList<>(oldList.length);
-        if(!idList.equals("")) {
+        String            idList  = prefs.getString(ID_LIST_KEY, "");
+        String[]          oldList = idList.split(",");
+        ArrayList<String> ids     = new ArrayList<>(oldList.length);
+        if (!idList.equals("")) {
             ids.addAll(Arrays.asList(oldList));
         }
         return ids;
@@ -67,7 +68,7 @@ public class JournalSharedPrefsRepository {
     // read an existing entry
     public JournalEntry readEntry(int id) {
         String entryCsv = prefs.getString(ENTRY_ITEM_KEY_PREFIX + id, "invalid");
-        if(!entryCsv.equals("invalid")) {
+        if (!entryCsv.equals("invalid")) {
             JournalEntry entry = new JournalEntry(entryCsv);
             return entry;
         } else {
@@ -82,13 +83,19 @@ public class JournalSharedPrefsRepository {
 
         // step through that list and read each entry
         ArrayList<JournalEntry> entryList = new ArrayList<>();
-        for(String id: listOfIds) {
+        for (String id : listOfIds) {
             entryList.add(readEntry(Integer.parseInt(id)));
         }
         return entryList;
     }
 
     // edit an existing entry
+    public void updateEntry(JournalEntry entry) {
+        final SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(ENTRY_ITEM_KEY_PREFIX + entry.getId(), entry.toCsvString());
+        editor.apply();
+    }
+
 
     // delete an entry
 }
