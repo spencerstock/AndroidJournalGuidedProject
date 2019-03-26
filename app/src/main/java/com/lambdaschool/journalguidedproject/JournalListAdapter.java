@@ -1,7 +1,10 @@
 package com.lambdaschool.journalguidedproject;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,21 +23,40 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
 
     @NonNull
     @Override
-    // create an instance of our viewholder which is our connection to the layout
-    public JournalEntryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return null;
+    // S02M02-7 create an instance of our viewholder which is our connection to the layout
+    public JournalEntryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.journal_entry_list_item, parent, false);
+        return new JournalEntryViewHolder(itemView);
     }
 
     @Override
-    // bind an element from our list of data to the provided viewholder
+    // S02M02-8 bind an element from our list of data to the provided viewholder
     public void onBindViewHolder(@NonNull JournalEntryViewHolder journalEntryViewHolder, int i) {
+        final JournalEntry data = entryData.get(i);
 
+        journalEntryViewHolder.entryDateView.setText(data.getDate());
+        journalEntryViewHolder.entryRatingView.setText(Integer.toString(data.getDayRating()));
+        final String substring = data.getEntryText().substring(
+                0,
+                data.getEntryText().length() > 30 ? 30 : data.getEntryText().length() - 1);
+        journalEntryViewHolder.entryTextView.setText(substring + "...");
+
+        journalEntryViewHolder.parentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent editIntent = new Intent(v.getContext(), DetailsActivity.class);
+                editIntent.putExtra(JournalEntry.TAG, data);
+                ((Activity)v.getContext()).startActivityForResult(
+                        editIntent,
+                        JournalListActivity.EDIT_ENTRY_REQUEST);
+            }
+        });
     }
 
     @Override
-    // used by the recyclerview to know when to stop building views
+    // S02M02-6 used by the recyclerview to know when to stop building views
     public int getItemCount() {
-        return 0;
+        return this.entryData.size();
     }
 
     // S02M02-4 our connection to the views in the layout
