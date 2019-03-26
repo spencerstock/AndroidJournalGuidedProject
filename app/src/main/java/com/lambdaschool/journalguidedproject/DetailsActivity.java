@@ -89,6 +89,7 @@ public class DetailsActivity extends AppCompatActivity {
         dayImageView = findViewById(R.id.journal_entry_image);
         final Uri imageUri = entry.getImage();
         if(imageUri != null) {
+            // TODO: use file I/O to read image from path
 //            dayImageView.setImageURI(imageUri);
         }
 
