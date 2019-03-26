@@ -8,7 +8,7 @@
     tools:context=".JournalListActivity"
     tools:showIn="@layout/activity_journal_list">
 
-    <ScrollView
+    <!--<ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -18,16 +18,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!--<TextView
+            &lt;!&ndash;<TextView
                 android:layout_margin="15dp"
                 android:textStyle="bold"
                 android:textSize="22sp"
                 android:text="yyyy/MM/dd HH:mm:ss - 5"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />-->
+                android:layout_height="wrap_content" />&ndash;&gt;
 
         </LinearLayout>
 
-    </ScrollView>
+    </ScrollView>-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/journal_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/journal_entry_list_item"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +29,8 @@ public class JournalListActivity extends AppCompatActivity {
     LinearLayout listLayout;
     JournalSharedPrefsRepository repo;
 
+    JournalListAdapter listAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,19 +40,11 @@ public class JournalListActivity extends AppCompatActivity {
 
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
-        /*JournalEntry testEntry = new JournalEntry(JournalEntry.INVALID_ID);
-        testEntry.setEntryText("This is a test of our csv functionality. I think this will work well, if we coded it properly.");
-        String csv = testEntry.toCsvString();
-        JournalSharedPrefsRepository repo = new JournalSharedPrefsRepository(context);
-        repo.createEntry(testEntry);
-        JournalEntry readEntry = repo.readEntry(testEntry.getId());
-        final ArrayList<JournalEntry> journalEntries = repo.readAllEntries();*/
-
         setContentView(R.layout.activity_journal_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        listLayout = findViewById(R.id.list_view);
+//        listLayout = findViewById(R.id.list_view);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +60,22 @@ public class JournalListActivity extends AppCompatActivity {
         });
 
         entryList = repo.readAllEntries();
+
+        // S02M02-9 bind adapter to view (UI)
+        // constructing a new list adapter with our initial data set
+        listAdapter = new JournalListAdapter(entryList);
+
+        // bind a new handle to our recycler view
+        RecyclerView recyclerView = findViewById(R.id.journal_recycler_view);
+
+        // binding our list adapter to our recycler view
+        recyclerView.setAdapter(listAdapter);
+
+        // creating and binding a layout manager to our recycler view
+        // this will manage how the items in the view are laid out
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
 //        addTestEntries();
     }
 
@@ -78,10 +90,7 @@ public class JournalListActivity extends AppCompatActivity {
         super.onResume();
         Log.i("ActivityLifecycle", getLocalClassName() + " - onResume");
 
-        listLayout.removeAllViews();
-        for(JournalEntry entry: entryList) {
-            listLayout.addView(createEntryView(entry));
-        }
+//        listAdapter.notifyDataSetChanged();
     }
 
     // user interacting with app
@@ -122,7 +131,7 @@ public class JournalListActivity extends AppCompatActivity {
         return entry;
     }
 
-    private TextView createEntryView(final JournalEntry entry) {
+    /*private TextView createEntryView(final JournalEntry entry) {
         TextView view = new TextView(context);
         view.setText(entry.getDate() + " - " + entry.getDayRating());
         view.setPadding(15, 15, 15, 15);
@@ -136,7 +145,7 @@ public class JournalListActivity extends AppCompatActivity {
             }
         });
         return view;
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -145,12 +154,17 @@ public class JournalListActivity extends AppCompatActivity {
                 if (data != null) {
                     JournalEntry entry = (JournalEntry) data.getSerializableExtra(JournalEntry.TAG);
                     entryList.add(entry);
+                    // S02M02-10 notifies the list adapter to change the item in the list
+                    listAdapter.notifyItemChanged(entryList.size() - 1);
                     repo.createEntry(entry);
                 }
             } else if (requestCode == EDIT_ENTRY_REQUEST) {
                 if (data != null) {
+                    // TODO: when delete is added, id will no longer work as an index
                     JournalEntry entry = (JournalEntry) data.getSerializableExtra(JournalEntry.TAG);
                     entryList.set(entry.getId(), entry);
+                    // S02M02-10
+                    listAdapter.notifyItemChanged(entry.getId());
                     repo.updateEntry(entry);
                 }
             }
