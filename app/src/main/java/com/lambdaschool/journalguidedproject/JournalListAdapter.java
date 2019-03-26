@@ -8,11 +8,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+// S02M02-3 Create List Adapter class, and add methods
 public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.JournalEntryViewHolder> {
 
     ArrayList<JournalEntry> entryData;
 
-    // constructor accept a list of data for our view
+    // S02M02-5 constructor accept a list of data for our view
     public JournalListAdapter(ArrayList<JournalEntry> entryData) {
         this.entryData = entryData;
     }
@@ -36,7 +37,7 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
         return 0;
     }
 
-    // our connection to the views in the layout
+    // S02M02-4 our connection to the views in the layout
     class JournalEntryViewHolder extends RecyclerView.ViewHolder {
 
         TextView entryTextView, entryDateView, entryRatingView;
