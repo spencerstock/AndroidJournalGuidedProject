@@ -1,6 +1,7 @@
 package com.lambdaschool.journalguidedproject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -42,27 +43,27 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
         switch (data.getDayRating()) {
             case 0:
                 journalEntryViewHolder.entryRatingView.setBackgroundColor(
-                        Color.parseColor("#FF0000"));
+                        journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient0));
                 break;
             case 1:
                 journalEntryViewHolder.entryRatingView.setBackgroundColor(
-                        Color.parseColor("#F66403"));
+                        journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient1));
                 break;
             case 2:
                 journalEntryViewHolder.entryRatingView.setBackgroundColor(
-                        Color.parseColor("#EDBF07"));
+                        journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient2));
                 break;
             case 3:
                 journalEntryViewHolder.entryRatingView.setBackgroundColor(
-                        Color.parseColor("#B9E50B"));
+                        journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient3));
                 break;
             case 4:
                 journalEntryViewHolder.entryRatingView.setBackgroundColor(
-                        Color.parseColor("#60DC0E"));
+                        journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient4));
                 break;
             case 5:
                 journalEntryViewHolder.entryRatingView.setBackgroundColor(
-                        Color.parseColor("#11D411"));
+                        journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient5));
                 break;
         }
 
@@ -95,6 +96,7 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
 
         TextView entryTextView, entryDateView, entryRatingView;
         View parentView;
+        Context context;
 
         // bind the data members of our viewholder to the items in the layout
         public JournalEntryViewHolder(@NonNull View itemView) {
@@ -104,6 +106,7 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
             entryRatingView = itemView.findViewById(R.id.item_entry_rating);
 
             parentView = itemView.findViewById(R.id.list_parent);
+            context = itemView.getContext();
         }
     }
 }
