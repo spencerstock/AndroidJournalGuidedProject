@@ -59,6 +59,15 @@ public class JournalListActivity extends AppCompatActivity {
             }
         });
 
+        // S02M03-8 Add listener to get to activity
+        findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
         entryList = repo.readAllEntries();
 
         // S02M02-9 bind adapter to view (UI)
