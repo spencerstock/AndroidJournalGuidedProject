@@ -7,7 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="#eee"
     app:cardCornerRadius="2dp">
 
     <android.support.constraint.ConstraintLayout
@@ -20,7 +19,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:text="yyyy/MM/dd HH:mm:ss"
-            android:textColor="@android:color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/item_entry_text"
             app:layout_constraintStart_toStartOf="parent"
