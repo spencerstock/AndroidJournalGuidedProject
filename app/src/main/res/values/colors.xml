@@ -5,11 +5,11 @@
     <color name="colorAccent">#FFDB06</color>
 
     <!--S02M03-1 Define new color resources-->
-    <color name="moodGradient0">#FF0000</color>
-    <color name="moodGradient1">#F66403</color>
-    <color name="moodGradient2">#EDBF07</color>
-    <color name="moodGradient3">#B9E50B</color>
-    <color name="moodGradient4">#60DC0E</color>
-    <color name="moodGradient5">#11D411</color>
+    <color name="moodGradient0">#45FF0000</color>
+    <color name="moodGradient1">#45F66403</color>
+    <color name="moodGradient2">#45EDBF07</color>
+    <color name="moodGradient3">#45B9E50B</color>
+    <color name="moodGradient4">#4560DC0E</color>
+    <color name="moodGradient5">#4511D411</color>
 
 </resources>

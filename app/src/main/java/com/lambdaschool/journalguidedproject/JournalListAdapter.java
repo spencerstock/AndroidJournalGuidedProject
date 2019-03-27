@@ -44,31 +44,34 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
         // S02M03-1 Extract hard coded colors into resources
         switch (data.getDayRating()) {
             case 0:
-                journalEntryViewHolder.entryRatingView.setBackgroundColor(
+                journalEntryViewHolder.parentLayout.setBackgroundColor(
                         journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient0));
                 break;
             case 1:
-                journalEntryViewHolder.entryRatingView.setBackgroundColor(
+                journalEntryViewHolder.parentLayout.setBackgroundColor(
                         journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient1));
                 break;
             case 2:
-                journalEntryViewHolder.entryRatingView.setBackgroundColor(
+                journalEntryViewHolder.parentLayout.setBackgroundColor(
                         journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient2));
                 break;
             case 3:
-                journalEntryViewHolder.entryRatingView.setBackgroundColor(
+                journalEntryViewHolder.parentLayout.setBackgroundColor(
                         journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient3));
                 break;
             case 4:
-                journalEntryViewHolder.entryRatingView.setBackgroundColor(
+                journalEntryViewHolder.parentLayout.setBackgroundColor(
                         journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient4));
                 break;
             case 5:
-                journalEntryViewHolder.entryRatingView.setBackgroundColor(
+                journalEntryViewHolder.parentLayout.setBackgroundColor(
+                        // this version is deprecated
+                        // when working on later versions (api 23+ use context.getColor())
                         journalEntryViewHolder.context.getResources().getColor(R.color.moodGradient5));
                 break;
         }
 
+//        S02M03-5 set the icon for our image view
         switch (data.getDayRating()) {
             case 0:
                 journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_0));
@@ -119,7 +122,7 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
 
         TextView entryTextView, entryDateView;
         ImageView entryRatingView;
-        View      parentView;
+        View      parentView, parentLayout;
         Context   context;
 
         // bind the data members of our viewholder to the items in the layout
@@ -130,6 +133,7 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
             entryRatingView = itemView.findViewById(R.id.item_entry_rating);
 
             parentView = itemView.findViewById(R.id.list_parent);
+            parentLayout = itemView.findViewById(R.id.container_layout);
             context = itemView.getContext();
         }
     }
