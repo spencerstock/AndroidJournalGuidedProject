@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
         final JournalEntry data = entryData.get(i);
 
         journalEntryViewHolder.entryDateView.setText(data.getDate());
-        journalEntryViewHolder.entryRatingView.setText(Integer.toString(data.getDayRating()));
+//        journalEntryViewHolder.entryRatingView.setText(Integer.toString(data.getDayRating()));
 
         // S02M02-12 Change background color based on the day's rating
         // S02M03-1 Extract hard coded colors into resources
@@ -68,6 +69,27 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
                 break;
         }
 
+        switch (data.getDayRating()) {
+            case 0:
+                journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_0));
+                break;
+            case 1:
+                journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_1));
+                break;
+            case 2:
+                journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_2));
+                break;
+            case 3:
+                journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_3));
+                break;
+            case 4:
+                journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_4));
+                break;
+            case 5:
+                journalEntryViewHolder.entryRatingView.setImageDrawable(journalEntryViewHolder.context.getDrawable(R.drawable.emoji_5));
+                break;
+        }
+
 
         final String substring = data.getEntryText().substring(
                 0,
@@ -95,9 +117,10 @@ public class JournalListAdapter extends RecyclerView.Adapter<JournalListAdapter.
     // S02M02-4 our connection to the views in the layout
     class JournalEntryViewHolder extends RecyclerView.ViewHolder {
 
-        TextView entryTextView, entryDateView, entryRatingView;
-        View parentView;
-        Context context;
+        TextView entryTextView, entryDateView;
+        ImageView entryRatingView;
+        View      parentView;
+        Context   context;
 
         // bind the data members of our viewholder to the items in the layout
         public JournalEntryViewHolder(@NonNull View itemView) {
