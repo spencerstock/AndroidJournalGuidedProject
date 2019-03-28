@@ -1,10 +1,15 @@
 package com.lambdaschool.journalguidedproject;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,13 +28,15 @@ public class JournalListActivity extends AppCompatActivity {
 
     public static final int NEW_ENTRY_REQUEST  = 2;
     public static final int EDIT_ENTRY_REQUEST = 1;
+    public static final int REMINDER_NOTIFICATION_ID = 456327;
     Context context;
 
-    ArrayList<JournalEntry> entryList;
-    LinearLayout listLayout;
+    ArrayList<JournalEntry>      entryList;
+    LinearLayout                 listLayout;
     JournalSharedPrefsRepository repo;
 
     JournalListAdapter listAdapter;
+    private String channelId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +59,8 @@ public class JournalListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-                Intent intent = new Intent(context, DetailsActivity.class);
-                JournalEntry entry = createJournalEntry();
+                Intent       intent = new Intent(context, DetailsActivity.class);
+                JournalEntry entry  = createJournalEntry();
                 intent.putExtra(JournalEntry.TAG, entry);
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
             }
@@ -63,8 +70,10 @@ public class JournalListActivity extends AppCompatActivity {
         findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(v.getContext(), SettingsActivity.class);
+                startActivity(intent);*/
+
+                displayNotification();
             }
         });
 
@@ -86,6 +95,30 @@ public class JournalListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
 //        addTestEntries();
+    }
+
+    void displayNotification() {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name        = "Journal Reminder";
+            String       description = "This channel will remind the user to make a journal entry";
+            int          importance  = NotificationManager.IMPORTANCE_LOW;
+
+            channelId = getPackageName() + ".reminder";
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            channel.setDescription(description);
+
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder= new NotificationCompat.Builder(context, channelId)
+                .setPriority(NotificationManager.IMPORTANCE_LOW)
+                .setContentTitle("Journal Reminder")
+                .setContentText("Remember to write a journal entry for today.")
+                .setSmallIcon(R.drawable.ic_collections_bookmark_black_24dp);
+
+        notificationManager.notify(REMINDER_NOTIFICATION_ID, builder.build());
     }
 
     @Override
@@ -158,8 +191,8 @@ public class JournalListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(resultCode == RESULT_OK) {
-            if(requestCode == NEW_ENTRY_REQUEST) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == NEW_ENTRY_REQUEST) {
                 if (data != null) {
                     JournalEntry entry = (JournalEntry) data.getSerializableExtra(JournalEntry.TAG);
                     entryList.add(entry);
