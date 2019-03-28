@@ -1,8 +1,10 @@
 package com.lambdaschool.journalguidedproject;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,21 +25,29 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class JournalListActivity extends AppCompatActivity {
 
-    public static final int NEW_ENTRY_REQUEST  = 2;
-    public static final int EDIT_ENTRY_REQUEST = 1;
-    public static final int REMINDER_NOTIFICATION_ID = 456327;
+    public static final  int    NEW_ENTRY_REQUEST                  = 2;
+    public static final  int    EDIT_ENTRY_REQUEST                 = 1;
+    public static final  int    REMINDER_NOTIFICATION_ID           = 456327;
+    public static final  int    LIST_INTENT_REQUEST_CODE           = 452;
+    public static final  String NEW_ENTRY_ACTION_KEY               = "new_entry_action";
+    public static final  int    LIST_INTENT_RESPONSSE_REQUEST_CODE = 6542;
+    public static final String TAG                                = "JournalListActivity";
+    public static final int NOTIFICATION_SCHEDULE_REQUEST_CODE = 54;
+
     Context context;
 
     ArrayList<JournalEntry>      entryList;
-    LinearLayout                 listLayout;
     JournalSharedPrefsRepository repo;
 
     JournalListAdapter listAdapter;
-    private String channelId;
+
+    // S02M04-3 build a string value for a unique channel id
+    public static String channelId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +55,11 @@ public class JournalListActivity extends AppCompatActivity {
 
         context = this;
         repo = new JournalSharedPrefsRepository(context);
+        channelId = getPackageName() + ".reminder";
+
+        setReminder();
+
+        processNotificationResponse(getIntent());
 
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
@@ -70,10 +86,11 @@ public class JournalListActivity extends AppCompatActivity {
         findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(v.getContext(), SettingsActivity.class);
-                startActivity(intent);*/
+                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
+                startActivity(intent);
 
-                displayNotification();
+                // S02M04-5 use a button to trigger the notification
+//                displayNotification();
             }
         });
 
@@ -97,28 +114,45 @@ public class JournalListActivity extends AppCompatActivity {
 //        addTestEntries();
     }
 
-    void displayNotification() {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    void setReminder() {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name        = "Journal Reminder";
-            String       description = "This channel will remind the user to make a journal entry";
-            int          importance  = NotificationManager.IMPORTANCE_LOW;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis() + 2000);
 
-            channelId = getPackageName() + ".reminder";
-            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
-            channel.setDescription(description);
+        PendingIntent notificationScheduleIntent = PendingIntent.getBroadcast(
+                context, NOTIFICATION_SCHEDULE_REQUEST_CODE, new Intent(context, NotificationScheduleReceiver.class), 0);
 
-            notificationManager.createNotificationChannel(channel);
+        alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.getTimeInMillis(),
+                10000,
+                notificationScheduleIntent);
+    }
+
+
+
+    // S02M04-7 method to process remote input
+    void processNotificationResponse(Intent intent) {
+        Bundle input = RemoteInput.getResultsFromIntent(intent);
+
+        if (input != null) {
+            String entryText = input.getCharSequence(NEW_ENTRY_ACTION_KEY).toString();
+
+            Log.i(TAG, entryText);
+
+            // S02M04-7b update notification to notify user that response was received
+            // TODO: not updating notification
+            NotificationCompat.Builder successNotification = new NotificationCompat.Builder(
+                    context, channelId)
+                    .setSmallIcon(R.drawable.ic_collections_bookmark_black_24dp)
+                    .setContentText("New Entry Created");
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(
+                    Context.NOTIFICATION_SERVICE);
+
+            notificationManager.notify(REMINDER_NOTIFICATION_ID, successNotification.build());
         }
-
-        NotificationCompat.Builder builder= new NotificationCompat.Builder(context, channelId)
-                .setPriority(NotificationManager.IMPORTANCE_LOW)
-                .setContentTitle("Journal Reminder")
-                .setContentText("Remember to write a journal entry for today.")
-                .setSmallIcon(R.drawable.ic_collections_bookmark_black_24dp);
-
-        notificationManager.notify(REMINDER_NOTIFICATION_ID, builder.build());
     }
 
     @Override
