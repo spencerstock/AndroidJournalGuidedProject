@@ -9,6 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--S02M04-12 add out receivers to the manifest-->
+        <receiver android:name=".NotificationScheduleReceiver"/>
+        <receiver android:name=".NotificationResponseReceiver"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
         <activity
             android:name=".JournalListActivity"
             android:label="@string/title_activity_journal_list"
@@ -19,8 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailsActivity">
-        </activity>
+        <activity android:name=".DetailsActivity"></activity>
     </application>
 
 </manifest>

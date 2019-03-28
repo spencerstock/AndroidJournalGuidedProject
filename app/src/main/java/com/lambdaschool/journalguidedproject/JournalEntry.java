@@ -30,6 +30,15 @@ public class JournalEntry implements Serializable {
         initializeDate();
     }
 
+    public JournalEntry(int id, String entryText) {
+        this.id = id;
+        this.entryText = entryText;
+        this.dayRating = 3;
+        this.image = "";
+
+        initializeDate();
+    }
+
     public JournalEntry(String csvString) {
         String[] values = csvString.split(",");
         // check to see if we have the right string
@@ -52,6 +61,10 @@ public class JournalEntry implements Serializable {
             // placeholder for image will maintain csv's structure even with no provided image
             this.image = values[4].equals("unused") ? "": values[4];
         }
+    }
+
+    boolean areEqual(JournalEntry a) {
+        return this.id == a.id && this.getDayRating() == a.getDayRating();
     }
 
     // converting our object into a csv string that we can handle in a constructor

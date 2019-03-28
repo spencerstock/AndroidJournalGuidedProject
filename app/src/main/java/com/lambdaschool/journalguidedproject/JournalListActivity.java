@@ -1,10 +1,18 @@
 package com.lambdaschool.journalguidedproject;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,19 +25,29 @@ import android.widget.TextView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class JournalListActivity extends AppCompatActivity {
 
-    public static final int NEW_ENTRY_REQUEST  = 2;
-    public static final int EDIT_ENTRY_REQUEST = 1;
+    public static final  int    NEW_ENTRY_REQUEST                  = 2;
+    public static final  int    EDIT_ENTRY_REQUEST                 = 1;
+    public static final  int    REMINDER_NOTIFICATION_ID           = 456327;
+    public static final  int    LIST_INTENT_REQUEST_CODE           = 452;
+    public static final  String NEW_ENTRY_ACTION_KEY               = "new_entry_action";
+    public static final  int    LIST_INTENT_RESPONSE_REQUEST_CODE  = 6542;
+    public static final String  TAG                                = "JournalListActivity";
+    public static final int     NOTIFICATION_SCHEDULE_REQUEST_CODE = 54;
+
     Context context;
 
-    ArrayList<JournalEntry> entryList;
-    LinearLayout listLayout;
+    ArrayList<JournalEntry>      entryList;
     JournalSharedPrefsRepository repo;
 
     JournalListAdapter listAdapter;
+
+    // S02M04-3 build a string value for a unique channel id
+    public static String channelId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +55,11 @@ public class JournalListActivity extends AppCompatActivity {
 
         context = this;
         repo = new JournalSharedPrefsRepository(context);
+        channelId = getPackageName() + ".reminder";
+
+        setReminder();
+
+//        processNotificationResponse(getIntent());
 
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
@@ -52,10 +75,22 @@ public class JournalListActivity extends AppCompatActivity {
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-                Intent intent = new Intent(context, DetailsActivity.class);
-                JournalEntry entry = createJournalEntry();
+                Intent       intent = new Intent(context, DetailsActivity.class);
+                JournalEntry entry  = createJournalEntry();
                 intent.putExtra(JournalEntry.TAG, entry);
                 startActivityForResult(intent, NEW_ENTRY_REQUEST);
+            }
+        });
+
+        // S02M03-8 Add listener to get to activity
+        findViewById(R.id.settings_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), SettingsActivity.class);
+                startActivity(intent);
+
+                // S02M04-5 use a button to trigger the notification
+//                displayNotification();
             }
         });
 
@@ -78,6 +113,38 @@ public class JournalListActivity extends AppCompatActivity {
 
 //        addTestEntries();
     }
+
+    // S02M04-8 schedule a broadcast to display our notification periodically
+    void setReminder() {
+        // S02M04-8b get a handle to the alarm manager
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        // S02M04-8c create a calendar object to set the time in millis for the broadcast
+        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis() + 2000);
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.MINUTE, 30);
+
+        // S02M04-8d set the intent to be used for the alarm
+        PendingIntent notificationScheduleIntent = PendingIntent.getBroadcast(
+                context,
+                NOTIFICATION_SCHEDULE_REQUEST_CODE,
+                new Intent(context, NotificationScheduleReceiver.class), 0);
+
+        // S02M04-8e cancel the alarm before creating a new one
+        alarmManager.cancel(notificationScheduleIntent);
+
+        // S02M04-8f schedule the alarm
+        alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP, // alarm type, wake up the CPU
+                calendar.getTimeInMillis(), // first time to trigger (set this to System.currentTimeMillis() + millis to test sooner)
+                AlarmManager.INTERVAL_DAY, // interval between each trigger, set this to a low number os seconds during testing.
+                notificationScheduleIntent); // pending intent to use during the trigger
+    }
+
+
+
+
 
     @Override
     protected void onStart() {
@@ -149,8 +216,8 @@ public class JournalListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(resultCode == RESULT_OK) {
-            if(requestCode == NEW_ENTRY_REQUEST) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == NEW_ENTRY_REQUEST) {
                 if (data != null) {
                     JournalEntry entry = (JournalEntry) data.getSerializableExtra(JournalEntry.TAG);
                     entryList.add(entry);

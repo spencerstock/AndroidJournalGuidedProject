@@ -37,4 +37,12 @@
         tools:listitem="@layout/journal_entry_list_item"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <!--S02M03-7 Add button to get to settings activity-->
+    <Button
+        android:id="@+id/settings_button"
+        android:text="@string/settings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </android.support.constraint.ConstraintLayout>

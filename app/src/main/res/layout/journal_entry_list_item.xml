@@ -7,10 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="#eee"
     app:cardCornerRadius="2dp">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:text="yyyy/MM/dd HH:mm:ss"
-            android:textColor="@android:color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@+id/item_entry_text"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +35,7 @@
             app:layout_constraintStart_toStartOf="@+id/item_date_view"
             app:layout_constraintTop_toBottomOf="@+id/item_date_view" />
 
-        <TextView
+        <!--<TextView
             android:id="@+id/item_entry_rating"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -46,6 +45,19 @@
             android:background="@color/colorPrimaryDark"
             android:textColor="@android:color/white"
             android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />-->
+
+        <!--S02M03-4 change rating to an image view to display our icons-->
+        <ImageView
+            android:id="@+id/item_entry_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/emoji_0"
+            android:gravity="center"
+            android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
