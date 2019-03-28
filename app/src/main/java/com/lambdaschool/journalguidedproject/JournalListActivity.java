@@ -35,9 +35,9 @@ public class JournalListActivity extends AppCompatActivity {
     public static final  int    REMINDER_NOTIFICATION_ID           = 456327;
     public static final  int    LIST_INTENT_REQUEST_CODE           = 452;
     public static final  String NEW_ENTRY_ACTION_KEY               = "new_entry_action";
-    public static final  int    LIST_INTENT_RESPONSSE_REQUEST_CODE = 6542;
-    public static final String TAG                                = "JournalListActivity";
-    public static final int NOTIFICATION_SCHEDULE_REQUEST_CODE = 54;
+    public static final  int    LIST_INTENT_RESPONSE_REQUEST_CODE  = 6542;
+    public static final String  TAG                                = "JournalListActivity";
+    public static final int     NOTIFICATION_SCHEDULE_REQUEST_CODE = 54;
 
     Context context;
 
@@ -59,7 +59,7 @@ public class JournalListActivity extends AppCompatActivity {
 
         setReminder();
 
-        processNotificationResponse(getIntent());
+//        processNotificationResponse(getIntent());
 
         Log.i("ActivityLifecycle", getLocalClassName() + " - onCreate");
 
@@ -114,46 +114,37 @@ public class JournalListActivity extends AppCompatActivity {
 //        addTestEntries();
     }
 
+    // S02M04-8 schedule a broadcast to display our notification periodically
     void setReminder() {
+        // S02M04-8b get a handle to the alarm manager
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
+        // S02M04-8c create a calendar object to set the time in millis for the broadcast
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis() + 2000);
+//        calendar.setTimeInMillis(System.currentTimeMillis() + 2000);
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.MINUTE, 30);
 
+        // S02M04-8d set the intent to be used for the alarm
         PendingIntent notificationScheduleIntent = PendingIntent.getBroadcast(
-                context, NOTIFICATION_SCHEDULE_REQUEST_CODE, new Intent(context, NotificationScheduleReceiver.class), 0);
+                context,
+                NOTIFICATION_SCHEDULE_REQUEST_CODE,
+                new Intent(context, NotificationScheduleReceiver.class), 0);
 
+        // S02M04-8e cancel the alarm before creating a new one
+        alarmManager.cancel(notificationScheduleIntent);
+
+        // S02M04-8f schedule the alarm
         alarmManager.setInexactRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
-                10000,
-                notificationScheduleIntent);
+                AlarmManager.RTC_WAKEUP, // alarm type, wake up the CPU
+                calendar.getTimeInMillis(), // first time to trigger (set this to System.currentTimeMillis() + millis to test sooner)
+                AlarmManager.INTERVAL_DAY, // interval between each trigger, set this to a low number os seconds during testing.
+                notificationScheduleIntent); // pending intent to use during the trigger
     }
 
 
 
-    // S02M04-7 method to process remote input
-    void processNotificationResponse(Intent intent) {
-        Bundle input = RemoteInput.getResultsFromIntent(intent);
 
-        if (input != null) {
-            String entryText = input.getCharSequence(NEW_ENTRY_ACTION_KEY).toString();
-
-            Log.i(TAG, entryText);
-
-            // S02M04-7b update notification to notify user that response was received
-            // TODO: not updating notification
-            NotificationCompat.Builder successNotification = new NotificationCompat.Builder(
-                    context, channelId)
-                    .setSmallIcon(R.drawable.ic_collections_bookmark_black_24dp)
-                    .setContentText("New Entry Created");
-
-            NotificationManager notificationManager = (NotificationManager) getSystemService(
-                    Context.NOTIFICATION_SERVICE);
-
-            notificationManager.notify(REMINDER_NOTIFICATION_ID, successNotification.build());
-        }
-    }
 
     @Override
     protected void onStart() {

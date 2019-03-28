@@ -30,6 +30,15 @@ public class JournalEntry implements Serializable {
         initializeDate();
     }
 
+    public JournalEntry(int id, String entryText) {
+        this.id = id;
+        this.entryText = entryText;
+        this.dayRating = 3;
+        this.image = "";
+
+        initializeDate();
+    }
+
     public JournalEntry(String csvString) {
         String[] values = csvString.split(",");
         // check to see if we have the right string

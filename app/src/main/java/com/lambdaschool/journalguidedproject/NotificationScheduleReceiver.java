@@ -1,20 +1,17 @@
 package com.lambdaschool.journalguidedproject;
 
-import android.app.ListActivity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.job.JobScheduler;
-import android.app.job.JobService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
 import android.util.Log;
 
+// S02M04-9 create an intent to receive our broadcasts
 public class NotificationScheduleReceiver extends BroadcastReceiver {
     Context context;
 
@@ -27,6 +24,7 @@ public class NotificationScheduleReceiver extends BroadcastReceiver {
         displayNotification();
     }
 
+    // S02M04-9b move notification generator to this class
     void displayNotification() {
         // S02M04-1 get a handle to the notification manager
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -57,10 +55,11 @@ public class NotificationScheduleReceiver extends BroadcastReceiver {
                 .build();
 
         // S02M04-6b
-        Intent inputIntent = new Intent(context, JournalListActivity.class);
-        PendingIntent pendingInputIntent = PendingIntent.getActivity(
+        // S02M04-9c change the remote input intent to broadcast to our other receiver
+        Intent inputIntent = new Intent(context, NotificationResponseReceiver.class);
+        PendingIntent pendingInputIntent = PendingIntent.getBroadcast(
                 context,
-                JournalListActivity.LIST_INTENT_RESPONSSE_REQUEST_CODE,
+                JournalListActivity.LIST_INTENT_RESPONSE_REQUEST_CODE,
                 inputIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
